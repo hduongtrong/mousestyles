@@ -3,7 +3,8 @@ from __future__ import print_function, absolute_import, division
 import numpy as np
 
 from mousestyles.data_utils import (pull_locom_tseries_subset,
-                                    total_time_rectangle_bins)
+                                    total_time_rectangle_bins,
+                                    load_data_classification)
 
 
 def test_pull_locom():
@@ -54,3 +55,13 @@ def test_total_time():
     TT = total_time_rectangle_bins(M, xbins=3, ybins=5)
     np.testing.assert_allclose(TT, [[0., 0., 0.], [0., 0., 0.],
                                     [0., 0., 0.], [0., 1., 0.], [0., 0., 0.]])
+
+
+def test_load_data_classification():
+    labels, features = load_data_classification()
+    assert type(labels) is np.ndarray
+    assert type(features) is np.ndarray
+    assert labels.shape == (1921, 3)
+    assert features.shape == (1921, 99)
+    np.testing.assert_allclose(np.sum(labels, axis=0),
+                               np.array([14142., 9324., 20219.]))

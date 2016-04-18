@@ -2,7 +2,10 @@
 
 from __future__ import print_function, absolute_import, division
 
+import os
 import numpy as np
+
+from mousestyles import data_dir
 
 
 def day_to_mouse_average(features, labels, num_strains=16,
@@ -265,3 +268,40 @@ def map_xbins_ybins_to_cage(rectangle=(0, 0), xbins=2, ybins=4,
     return ((coord_x, coord_y), (coord_x + delta_x, coord_y),
             (coord_x, coord_y - delta_y),
             (coord_x + delta_x, coord_y - delta_y))
+
+
+def load_data_classification():
+    """This function load the data and return X, Y for classification
+
+    Parameters
+    ----------
+    data_path: string
+        Path to data file all_features_mousedays_11bins.npy
+
+    Return:
+    -------
+    labels: ndarray, shape (1921, 3)
+        First column is mouse strain, second column is
+        mouse twin id, and third column is day
+
+    features: ndarray shape (1921, 99)
+        9 features, each with 11 bins, for a total 99 features.
+        1921 observations
+
+    Examples:
+    >>> labels, features = load_data(data)
+    >>> labels.shape
+    (1921, 3)
+    >>> features.shape
+    (1921, 99)
+
+    """
+    data_path = os.path.join(data_dir, "all_features_mousedays_11bins.npy")
+    data = np.load(data_path)
+    labels = data[0, :, 0:3]
+    labels = np.array(labels, dtype=np.uint8)
+    features = np.hstack(data[:, :, 3:])
+    # Standardize The Features
+    features -= np.mean(features, axis=0)
+    features /= np.std(features, axis=0)
+    return labels, features
